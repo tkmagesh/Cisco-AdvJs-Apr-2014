@@ -17,3 +17,15 @@ function sort(list){
        }
     }
 }
+
+function sort(list,attrName){
+  for(var i=0;i<list.length-1;i++)
+    for(var j=i+1;j<list.length;j++){
+       if (list[i][attrName] > list[j][attrName]){
+         var temp = list[i];
+         list[i] = list[j];
+         list[j] = temp;
+       }
+    }
+}
+
