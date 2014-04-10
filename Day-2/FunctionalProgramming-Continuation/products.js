@@ -145,7 +145,11 @@ function join(leftList, rightList, leftKeySelectorFn, rightKeySelectorFn, combin
    return result;
 }
 
-var result = join(products,categories,function(p){ return p.category},function(c){ return c.id;},function(p,c){ 
+function productKeySelector(p){
+  return p.category;
+}
+
+var result = join(products,categories,productKeySelector,function(c){ return c.id;},function(p,c){ 
    return {id : p.id, name : p.name, cost : p.cost, units : p.units,  category : c.name };
  });
 
