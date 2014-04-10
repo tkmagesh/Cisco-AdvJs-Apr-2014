@@ -127,3 +127,26 @@ function groupBy(list,keySelectorFn){
    return result;
 }
 
+var categories = [
+  {id : 1, name : "stationary"},
+  {id : 2, name : "grocery"}
+]
+
+function join(leftList, rightList, leftKeySelectorFn, rightKeySelectorFn, combinatorFn){
+   var result = [];
+   for(var i=0;i<leftList.length;i++){
+      var leftKey = leftKeySelectorFn(leftList[i]);
+      for(var j=0;j<rightList.length;j++){
+         var rightKey = rightKeySelectorFn(rightList[j]);
+         if (leftKey === rightKey)
+            result.push(combinatorFn(leftList[i],rightList[j]));
+      }
+   }
+   return result;
+}
+
+var result = join(products,categories,function(p){ return p.category},function(c){ return c.id;},function(p,c){ 
+   return {id : p.id, name : p.name, cost : p.cost, units : p.units,  category : c.name };
+ });
+
+console.table(result);
