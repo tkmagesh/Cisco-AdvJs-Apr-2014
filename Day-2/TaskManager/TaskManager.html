@@ -10,6 +10,108 @@
 		font-style: italic;
 	}
 	</style>
+	<script type="text/javascript">
+	function TaskStorage(){
+		this.storage = window.localStorage;
+	}
+
+	TaskStorage.prototype.addTask = function(taskName){
+		var newId = new Date().getTime().toString();
+		var newTask = {
+			id : newId,
+			name : taskName,
+			isCompleted : false
+		};
+		this.storage.setItem(newId,window.JSON.stringify(newTask));
+		return newTask;
+	};
+
+	TaskStorage.prototype.removeTask = function(taskId){
+		this.storage.removeItem(taskId);
+	};
+
+	TaskStorage.prototype.getAllTasks = function(){
+		console.log(this.storage);
+		var result = [];
+		for(var i=0;i<this.storage.length;i++){
+			var key = this.storage.key(i);
+			var task = window.JSON.parse(this.storage.getItem(key));
+			result.push(task);
+		}
+		return result;
+	};
+
+	TaskStorage.prototype.toggleCompletion = function(taskId){
+		var task = window.JSON.parse(this.storage.getItem(taskId));
+		task.isCompleted = !task.isCompleted;
+		this.storage.setItem(taskId, window.JSON.stringify(task));
+	};
+	
+
+	(function(){
+		var txtTask
+			,taskList
+			, taskStorage;
+
+		window.addEventListener("DOMContentLoaded",init);
+
+		function init(){
+			txtTask = document.getElementById("txtTask");
+			taskList = document.getElementById("ulTaskList");
+			taskStorage = new TaskStorage();
+			document.getElementById("btnAddTask").addEventListener("click",onBtnAddTaskClick);
+			document.getElementById("btnRemoveCompleted").addEventListener("click",onBtnRemoveCompletedClick);
+			loadTasksFromStorage();
+		}
+
+		function loadTasksFromStorage(){
+			var tasks = taskStorage.getAllTasks();
+			/*tasks.forEach(function(t){
+				addTaskToList(t);
+			})*/
+			tasks.forEach(addTaskToList);
+
+		}
+
+		function onBtnAddTaskClick(){
+			var taskName = txtTask.value;
+			var newTask = taskStorage.addTask(taskName);
+			addTaskToList(newTask);
+			
+		}
+
+		function addTaskToList(newTask){
+			var task = document.createElement("li");
+			task.innerHTML = newTask.name;
+			task.setAttribute("task-id",newTask.id);
+			task.addEventListener("click",onTaskItemClick);
+			if (newTask.isCompleted) task.classList.add("completed");
+			taskList.appendChild(task);
+		}
+
+		function onTaskItemClick(){
+			if (this.classList.contains("completed")){
+				this.classList.remove("completed");
+			} else {
+				this.classList.add("completed");
+			}
+			taskStorage.toggleCompletion(this.getAttribute("task-id"));
+		}
+
+		function onBtnRemoveCompletedClick(){
+			for(var i=taskList.children.length-1;i>=0;i--){
+				var taskItem = taskList.children[i];
+				if (taskItem.classList.contains("completed")){
+					taskItem.removeEventListener("click",onTaskItemClick);
+					taskStorage.removeTask(taskItem.getAttribute("task-id"));
+					taskItem.remove();
+				}
+			}
+		}
+
+	})();
+	
+	</script>
 </head>
 <body>
 	<h1>Task Manager</h1>
@@ -19,9 +121,7 @@
 	<input type="button" value="Add Task" id="btnAddTask">
 	<input type="button" value="Remove Completed" id="btnRemoveCompleted">
 	<ul id="ulTaskList">
-		<li>Task - 1</li>
-		<li class = 'completed'>Task - 2</li>
-		<li>Task - 3</li>
+		
 	</ul>
 </body>
 </html>
