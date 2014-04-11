@@ -22,36 +22,59 @@
 		this.hra = 0;
 		this.da = 0;
 		this.tax = 0;
+		this.onSalaryChange = undefined;
+
 		this.calculate = function(){
 			var gross = this.basic + this.hra + this.da;
 			this.salary = gross * ((100-this.tax)/100);
+			if (typeof this.onSalaryChange === "function") this.onSalaryChange();
 		}
 	}
 
 	(function(){
 		var txtBasic, txtHra, txtDa, rangeTax, spanTax, divResult;
-		var calculator = new SalaryCalculator();
+		window.calculator = new SalaryCalculator();
 		window.addEventListener("DOMContentLoaded",init);
 		function init(){
+			/*View Changes*/
 			document.getElementById('btnCalculate').addEventListener("click",onBtnCalculateClick);
+			
 			txtBasic = document.getElementById("txtBasic");
+			txtBasic.addEventListener("change",onTxtBasicChange);
+
 			txtHra = document.getElementById("txtHra");
+			txtHra.addEventListener("change",onTxtHraChange);
+
 			txtDa = document.getElementById("txtDa");
+			txtDa.addEventListener("change",onTxtDaChange);
+
 			rangeTax = document.getElementById("rangeTax");
+			rangeTax.addEventListener("change",onRangeTaxChange);
+
 			spanTax = document.getElementById("spanTax");
 			divResult = document.getElementById("divResult");
-			
-			rangeTax.addEventListener("change",onRangeTaxChange);
+
+			/*Model Changes*/
+			calculator.onSalaryChange = function(){
+				divResult.innerHTML = calculator.salary;
+			}
+
+		}
+		function onTxtBasicChange(){
+			calculator.basic = parseInt(txtBasic.value,10);
+		}
+		function onTxtHraChange(){
+			calculator.hra = parseInt(txtHra.value,10);
+		}
+		function onTxtDaChange(){
+			calculator.da = parseInt(txtDa.value,10);
 		}
 		function onBtnCalculateClick(){
-			calculator.basic = parseInt(txtBasic.value,10);
-			calculator.hra = parseInt(txtHra.value,10);
-			calculator.da = parseInt(txtDa.value,10);
-			calculator.tax = parseInt(rangeTax.value,10);
 			calculator.calculate();
-			divResult.innerHTML = calculator.salary;
+			
 		}
 		function onRangeTaxChange(){
+			calculator.tax = parseInt(rangeTax.value,10);
 			spanTax.innerHTML = this.value;
 		}
 	})();
