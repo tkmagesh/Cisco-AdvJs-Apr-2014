@@ -10,7 +10,12 @@
 		font-style: italic;
 	}
 	</style>
+	<script src="handlebars.js"></script>
 	<script src="jquery.js"></script>
+	<script src="Task.js"></script>
+	<script src="TaskCollection.js"></script>
+	<script src="TaskView.js"></script>
+	<script src="AppView.js"></script>
 	<script id="appTemplate" type="text/template">
 		<h1>Task Manager</h1>
 		<hr>
@@ -20,163 +25,33 @@
 		<input type="button" value="Remove Completed" id="btnRemoveCompleted">
 		<ul id="ulTaskList"></ul>
 	</script>
-	<script>
-	function AppView(templateId,model){
-		var _templateId = templateId;
-		var _model = model;
-		var that = this;
-		this.$root = $("<div>");
-		this.init = function(){
-			this.$root.on("click","#btnAddTask",(function(){
-				var taskName = this.$root.find("#txtTask").val();
-				var newTask = new Task();
-				newTask.id(new Date().getTime());
-				newTask.name(taskName);
-				_model.addTask(newTask);
-			}).bind(this));
-
-			this.$root.on("click","#btnRemoveCompleted",(function(){
-				_model.removeCompletedTasks();
-			}).bind(this));
-			//model event bindings
-
-			_model.addChangeListener("add",this.render.bind(this));
-			_model.addChangeListener("remove",this.render.bind(this));
-		};
-		this.addTaskToUi = function(task){
-			var newTaskView = new TaskView(task);
-			newTaskView.init();
-			newTaskView.render().$root.appendTo(that.$root.find("#ulTaskList"));
-		};
-
-		this.render = function(){
-			var viewHTML = $(templateId).html();
-			this.$root.html(viewHTML);
-			for(var i=0;i<_model.list.length;i++)
-				this.addTaskToUi(_model.list[i]);
-			
-			return this;
-		};
-	}
-	function TaskCollection(){
-		this.subscribers = {};
-
-		this.addChangeListener = function(attrName,callbackFn){
-			this.subscribers[attrName] = this.subscribers[attrName] || [];
-			this.subscribers[attrName].push(callbackFn);
-		}
-		//var that = this;
-
-		var triggerSubscribers = (function(attrName){
-			var subscribers = this.subscribers[attrName] || [];
-			var eventArgs = [].slice.call(arguments,1);
-			for(var i=0;i<subscribers.length;i++)
-				setTimeout((function(index,args){
-					return function(){
-						return subscribers[index].apply(this,args)	
-					}
-				})(i,eventArgs));
-		}).bind(this);
-
-		this.list = [];
-
-		this.addTask = function(task){
-			this.list.push(task);
-			triggerSubscribers("add",task);
-		};
-		this.removeCompletedTasks = function(){
-			for(var i=this.list.length-1;i>=0;i--){
-				var task = this.list[i];
-				if (task.isCompleted()){
-					this.list.splice(i,1);		
-					triggerSubscribers("remove");
-				}
-			}
-		}
-		this.removeTask = function(index){
-			this.list.splice(index,1);
-			triggerSubscribers("remove");
-		}
-	}
-
-	function Task(id,name,isCompleted){
-		this.subscribers = {};
-
-		this.addChangeListener = function(attrName,callbackFn){
-			this.subscribers[attrName] = this.subscribers[attrName] || [];
-			this.subscribers[attrName].push(callbackFn);
-		}
-		//var that = this;
-
-		var triggerSubscribers = (function(attrName){
-			var subscribers = this.subscribers[attrName] || [];
-			var eventArgs = [].slice.call(arguments,1);
-			for(var i=0;i<subscribers.length;i++)
-				setTimeout((function(index,args){
-					return function(){
-						return subscribers[index].apply(this,args)	
-					}
-				})(i,eventArgs));
-		}).bind(this);
-
-		var _id = id,
-			_name = name,
-			_isCompleted = isCompleted;
-
-		this.id = function(val){
-			if (typeof val === "undefined") return _id;
-			_id = val;
-			triggerSubscribers("id");
-		};
-
-		this.isCompleted = function(val){
-			if (typeof val === "undefined") return _isCompleted;
-			_isCompleted = val;
-			triggerSubscribers("isCompleted");
-		};
-
-		this.toggleCompletion = function(){
-			_isCompleted = !_isCompleted;
-			triggerSubscribers("isCompleted");	
-		}
-
-		this.name = function(val){
-			if (typeof val === "undefined") return _name;
-			_name = val;
-			triggerSubscribers("name");
-		};
-	}
-
-	function TaskView(model){
-		var _model = model;
-		var that = this;
-		this.$root = $("<li>");
-		this.init = function(){
-			this.$root.on("click",(function(){
-				_model.toggleCompletion();
-			}).bind(this));
-
-			//model event bindings
-
-			_model.addChangeListener("isCompleted",this.render.bind(this));
-			_model.addChangeListener("name",this.render.bind(this));
-			_model.addChangeListener("id",this.render.bind(this));
-		};
+	<script id="taskTemplate" type="text/template">
+		{{#if isEditing}}
+			<div id="editing">
+				<input type="text" id="txtTaskName" value="{{name}}"></span>
+				<input type="button" id="btnSave" value="Save">
+				<input type="button" id="btnCancel" value="Cancel">	
+			</div>
+		{{else}}
+			<div id="readOnly">
+				{{#if isCompleted}}
+					<span id="spanTaskName" class="completed">{{name}}</span>
+				{{else}}
+					<span id="spanTaskName" >{{name}}</span>
+				{{/if}}
+				<input type="button" id="btnEdit" value="Edit">	
+			</div>
+		{{/if}}
 		
+	</script>
+	<script>
+	
+	
 
-		this.render = function(){
-			this.$root.html(_model.name());
-			if (_model.isCompleted()){
-				this.$root.addClass("completed");
-			}
-			else {
-				this.$root.removeClass("completed");
-			}
-			return this;
-		};
-	}
+	
+	
 
-	function appInt(){
+	$(function appInt(){
 	  window.taskCollection = new TaskCollection();
 	  taskCollection.addTask(new Task(1,"Task -1",false));
 	  taskCollection.addTask(new Task(2,"Task - 2",true));
@@ -184,7 +59,8 @@
 	  appView.init();
 	  $(document.body).append(appView.render().$root);
 	  
-	}
+	});
+
 	</script>
 </head>
 <body>
