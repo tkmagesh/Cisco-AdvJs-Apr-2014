@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Salary Calculator</title>
+	<style type="text/css">
+	label{
+		display: block;
+	}
+	#divResult{
+		font-size: 32px;
+		color : red;
+		text-align: center;
+	}
+	.content{
+		width : 300px;
+	}
+	</style>
+	<script src="jquery.js"></script>
+	<script src="underscore.js"></script>
+	<script src="backbone.js"></script>
+	<script src="SalaryCalculatorModel.js"></script>
+	<script src="SalaryCalculatorView.js"></script>
+	<script>
+	$(function(){
+		var model = new SalaryCalculator({basic : 10000, hra : 2000, da:3000, tax : 10});
+		var view = new SalaryCalculatorView({
+		  el : $("#content"),
+		  model : model
+		});
+		view.render();
+	});
+	</script>
+</head>
+
+<body>
+	<h1>Salary Calculator</h1>
+	<hr>
+	<div id="content">
+		<div><label for="">Basic :</label><input type="text" name="" id="txtBasic"></div>
+		<div><label for="">HRA :</label><input type="text" name="" id="txtHra"></div>
+		<div><label for="">DA :</label><input type="text" name="" id="txtDa"></div>
+		<div>
+			<label for="">Tax :</label>
+			<input type="range" name="" id="rangeTax" min="0" max="50" value="0">
+			<span id="spanTax">[Tax%]</span>
+		</div>
+		<div><input type="button" value="Calculate" id="btnCalculate"></div>
+		<div>
+			<div id="divResult">[Salary]</div>
+		</div>
+		</div>
+	
+</body>
+</html>
