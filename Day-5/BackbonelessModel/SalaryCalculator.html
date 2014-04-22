@@ -23,10 +23,11 @@
 	<script src="SalaryCalculatorView.js"></script>
 	<script>
 	$(function(){
-		window.model = new SalaryCalculator({basic : 10000, hra : 2000, da:3000, tax : 10});
+		//window.model = new SalaryCalculator({basic : 10000, hra : 2000, da:3000, tax : 10});
+		//window.model = new SalaryCalculator();
 		window.view = new SalaryCalculatorView({
 		  el : $("#content"),
-		  model : model
+		  model : SalaryCalculator
 		});
 		view.render();
 	});
@@ -51,21 +52,7 @@
 		</div>
 		</div>
 	
-	<hr>
-	<div id="content-2">
-		<div><label for="">Basic :</label><input type="text" name="" id="txtBasic"></div>
-		<div><label for="">HRA :</label><input type="text" name="" id="txtHra"></div>
-		<div><label for="">DA :</label><input type="text" name="" id="txtDa"></div>
-		<div>
-			<label for="">Tax :</label>
-			<input type="range" name="" id="rangeTax" min="0" max="50" value="0">
-			<span id="spanTax">[Tax%]</span>
-		</div>
-		<div><input type="button" value="Calculate" id="btnCalculate"></div>
-		<div>
-			<div id="divResult">[Salary]</div>
-		</div>
-		</div>
+	
 	
 </body>
 </html>

@@ -10,6 +10,7 @@ var SalaryCalculatorView = Backbone.View.extend({
 	},
 	calculateSalary : function(){
 		this.model.calculate();
+		this.render();
 	},
 	updateModel : function(){
 		this.model.set('basic',parseInt(this.$("#txtBasic").val()));
