@@ -1,5 +1,4 @@
 function MyPromise(fn){
-	var that = this;
 	fn((function(){
 			var args = arguments;
 			successCallbacks.forEach(function(successCallback){
@@ -17,7 +16,7 @@ function MyPromise(fn){
 			});
 			this.error = (function(callback){
 				callback.apply(this,Array.prototype.slice.call(args,0));
-				return that;
+				return this;
 			}).bind(this);
 
 	}).bind(this));
