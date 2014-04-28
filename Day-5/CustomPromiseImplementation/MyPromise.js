@@ -35,3 +35,16 @@ function MyPromise(fn){
    	   triggerCatch();
    }); 
 }
+
+
+
+var p = new MyPromise(function(success,failure){
+  setTimeout(function(){
+       console.log("async operation completed [from inside the promise object]");
+       success(new Date());
+  },20000);
+});
+
+p.then(function(result){
+	conosle.log("async operation completed at " + result + " and 'then' block executed at " + new Date());
+});
