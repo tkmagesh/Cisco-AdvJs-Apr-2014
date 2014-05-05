@@ -46,5 +46,5 @@ var p = new MyPromise(function(success,failure){
 });
 
 p.then(function(result){
-	conosle.log("async operation completed at " + result + " and 'then' block executed at " + new Date());
+	console.log("async operation completed at " + result + " and 'then' block executed at " + new Date());
 });

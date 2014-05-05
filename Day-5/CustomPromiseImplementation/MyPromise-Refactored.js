@@ -1,4 +1,6 @@
 function MyPromise(fn){
+
+	var setupHandlers = function();
 	fn((function(){
 			var args = arguments;
 			successCallbacks.forEach(function(successCallback){
